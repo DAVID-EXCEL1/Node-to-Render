@@ -151,15 +151,15 @@
 </head>
 
 <body>
-    <form action="/login" method="POST" class="form">
+    <form action="/user/login" method="POST" class="form">
         <p class="title">Log in </p>
         <p class="message">Sign in now and regain full access to our app. </p>
         <label>
-            <input class="input" type="email" placeholder="" required="">
+            <input class="input" type="email" name="email" placeholder="" required="">
             <span>Email</span>
         </label>
         <label>
-            <input class="input" type="password" placeholder="" required="">
+            <input class="input" type="password" name="password" placeholder="" required="">
             <span>Password</span>
         </label>
         <button class="submit">Submit</button>

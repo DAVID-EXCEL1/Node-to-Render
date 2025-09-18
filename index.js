@@ -2,8 +2,12 @@ const express = require('express');
 const app = express();
 const dotenv = require("dotenv")
 const ejs = require('ejs');
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs'); 
 const mongoose = require("mongoose")
+const cors = require("cors")
+app.use(cors()) 
+// CORS (Cross-Origin Resource Sharing) is a security feature implemented by web browsers to restrict web pages from making requests to a different domain than the one that served the web page. This is done to prevent malicious websites from accessing sensitive data on other domains without permission.
+// make sure it is above your route files
 dotenv.config()
 const customerRouter = require("./routes/user.route")
 
@@ -12,8 +16,10 @@ const customerRouter = require("./routes/user.route")
 
 // Body-parser is like a translator.
 // It takes that raw incoming request data and converts it into a usable JavaScript object, so you can easily access it in your code.
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
 
 
 const URI = process.env.URI
@@ -38,6 +44,7 @@ mongoose.connect(URI)
 let allCustomers = [];
 
 app.use("/user", customerRouter)
+
 
 const port = process.env.PORT || 3201;
 app.listen(port, () => {
