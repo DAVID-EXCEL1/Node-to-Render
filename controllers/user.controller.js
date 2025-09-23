@@ -68,7 +68,7 @@ const postRegister = (req, res) => {
                 }
             });
 
-            res.redirect("/user/signin"); 
+            res.redirect("/user/signin");
         })
         .catch((err) => {
             console.error("Error registering customer:", err);
@@ -102,16 +102,19 @@ const postLogin = (req, res) => {
 
             // ✅ Success
             console.log("Login successful for:", foundCustomer.email);
+            const token = jwt.sign({ email: req.body.email }, "secretkey", { expiresIn: "1h" });
+            console.log("Generated JWT:", token);
             return res.json({
                 message: "Login successful",
                 user: {
                     id: foundCustomer._id,
                     firstName: foundCustomer.firstName,
-                    email: foundCustomer.email
+                    email: foundCustomer.email,
+                    token: token
                 }
             });
         })
-        
+
         .catch((err) => {
             console.error("Error logging in:", err);
             res.status(500).json({ message: "Internal server error" });
@@ -119,16 +122,34 @@ const postLogin = (req, res) => {
 };
 
 
+// const getDashboard = (req, res) => {
+//     customerModel.find()
+//         .then((allCustomers) => {
+//             console.log(allCustomers);
+//             res.render('index', { allCustomers });
+//         })
+//         .catch((err) => {
+//             console.error("Error fetching customers:", err);
+//             res.status(500).send("Internal server error");
+//         });
+// }
+
 const getDashboard = (req, res) => {
-    customerModel.find()
-        .then((allCustomers) => {
-            console.log(allCustomers);
-            res.render('index', { allCustomers });
-        })
-        .catch((err) => {
-            console.error("Error fetching customers:", err);
-            res.status(500).send("Internal server error");
-        });
+    let token = req.headers.authorization.split(" ")[1]
+    jwt.verify(token, "secretkey", (err, result) => {
+        if (err) {
+            console.log(err);
+            res.send({status:false, message:"Token is expired or invalid"})
+        } else {
+            console.log(result);
+            let email = result.email
+            customerModel.findOne({ email: email })
+                .then((foundCustomer) => {
+                    res.send({status:true, message: "token is valid", foundCustomer})
+                })
+            
+        }
+    });
 }
 
 module.exports = { getSignup, postRegister, getSignIn, postLogin, getDashboard }
